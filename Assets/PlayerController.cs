@@ -26,6 +26,7 @@ public class PlayerController : MonoBehaviour
         {
             if (value == null && !isSpirit)
             {
+                transform.position += creature.offset * 2f;
                 creature.spirit = null;
                 body = null;
                 spirit.transform.position = transform.position;

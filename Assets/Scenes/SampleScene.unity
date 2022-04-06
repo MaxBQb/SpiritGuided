@@ -1023,7 +1023,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 623614545}
-  m_LocalRotation: {x: 0.22684468, y: 0.00000001873582, z: -0.000000004363883, w: 0.97393095}
+  m_LocalRotation: {x: 0.22684468, y: -0.00000001873582, z: 0.000000004363883, w: 0.97393095}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -1457,6 +1457,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 6
+  lifeAttractionRadius: 5
+  lifeAttractionPower: 5
   _rigidbody: {fileID: 0}
 --- !u!135 &960464560
 SphereCollider:
@@ -2110,9 +2112,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a2d6acffa88fe6746b9d706a79cbe836, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  criticalLifeAttractionRadius: 1.35
-  lifeAttractionRadius: 4.35
-  lifeAttractionSpeed: 0.05
   camera: {fileID: 963194228}
   spirit: {fileID: 960464558}
 --- !u!1 &1061164557
@@ -2127,6 +2126,7 @@ GameObject:
   - component: {fileID: 1061164560}
   - component: {fileID: 1061164559}
   - component: {fileID: 1061164558}
+  - component: {fileID: 1061164562}
   m_Layer: 0
   m_Name: wall
   m_TagString: Untagged
@@ -2210,6 +2210,22 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!54 &1061164562
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1061164557}
+  serializedVersion: 2
+  m_Mass: 16
+  m_Drag: 0.1
+  m_AngularDrag: 0.1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &1080730469
 GameObject:
   m_ObjectHideFlags: 3

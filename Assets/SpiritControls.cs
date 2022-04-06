@@ -6,9 +6,9 @@ using UnityEngine;
 public class SpiritControls : MonoBehaviour, Creature
 {
     // Variables
-    [SerializeField] private float speed = 120.0f;
-    [SerializeField] private float lifeAttractionRadius = 4.35f;
-    [SerializeField] private float lifeAttractionSpeed = 0.5f;
+    [SerializeField] private float speed = 6.0f;
+    [SerializeField] private float lifeAttractionRadius = 5f;
+    [SerializeField] private float lifeAttractionPower = 10f;
     private Vector3 moveDirection = Vector3.zero;
     private Quaternion lookAngle = Quaternion.identity;
     private Vector3 finalDirection = Vector3.zero;
@@ -106,7 +106,21 @@ public class SpiritControls : MonoBehaviour, Creature
     {
         foreach (var collider in Physics.OverlapSphere(transform.position, lifeAttractionRadius))
             if (collider.gameObject.IsAvailable())
-                controller.Move((collider.transform.position - transform.position) * lifeAttractionSpeed * Time.deltaTime);
+                Magnetize(collider.transform.position
+                          + collider.gameObject.GetControls().offset
+                          - transform.position, lifeAttractionPower);
+    }
+    
+    void OnDrawGizmosSelected()
+    {   
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(transform.position, lifeAttractionRadius);
+    }
+    
+    private void Magnetize(Vector3 direction, float power)
+    {
+        controller.Move(direction.normalized * power/(direction.magnitude*direction.magnitude) * Time.deltaTime);
+        Debug.DrawRay(transform.position, direction, Color.green);
     }
 
     private void OnControllerColliderHit(ControllerColliderHit hit)
