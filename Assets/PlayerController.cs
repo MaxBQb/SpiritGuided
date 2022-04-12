@@ -24,25 +24,10 @@ public class PlayerController : MonoBehaviour
         get => isSpirit ? spirit : body;
         set
         {
-            if (value == null && !isSpirit)
-            {
-                transform.position += creature.offset * 2f;
-                creature.spirit = null;
-                body = null;
-                spirit.transform.position = transform.position;
-                creature.spirit = gameObject;
-                UpdateParent();
-                return;
-            }
-
-            if (isSpirit && value.IsAvailable())
-            {
-                creature.spirit = null;
-                body = value;
-                creature.spirit = gameObject;
-            }
-
-            UpdateParent();
+            if (value == null)
+                MoveOut();
+            else
+                MoveIn(value);
         }
     }
 
@@ -80,7 +65,29 @@ public class PlayerController : MonoBehaviour
     }
 
     // Logic
+    
+    private void MoveIn(GameObject newBody)
+    {
+        if (!isSpirit || !newBody.IsAvailable()) 
+            return;
+        creature.spirit = null;
+        body = newBody;
+        creature.spirit = gameObject;
+        UpdateParent();
+    }
 
+    private void MoveOut()
+    {
+        if (isSpirit)
+            return;
+        transform.position += creature.offset * 2f;
+        creature.spirit = null;
+        body = null;
+        spirit.transform.position = transform.position;
+        UpdateParent();
+        creature.spirit = gameObject;
+    }
+    
     private void UpdateParent()
     {
         gameObject.transform.SetParent(physicalForm.gameObject.transform);
@@ -97,8 +104,6 @@ public class PlayerController : MonoBehaviour
         spiritControls.creatureContact -= MoveIn;
     }
     
-    private void MoveIn(GameObject other) => physicalForm = other;
-
     private void Start()
     {
         UpdateParent();

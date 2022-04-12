@@ -42,6 +42,7 @@ public class MobAPI : MonoBehaviour, Creature
             }
 
             moveDirection = Vector3.zero;
+            _landingDirection = null;
             finalDirection = Vector3.zero;
         }
     }
