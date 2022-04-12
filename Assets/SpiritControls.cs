@@ -92,12 +92,10 @@ public class SpiritControls : MonoBehaviour, Creature
         controller = GetComponent<CharacterController>();
     }
 
-    void Update()
+    private void FixedUpdate()
     {
-    }
-
-    void FixedUpdate()
-    {
+        if (!enabled)
+            return;
         LifeAttractionApply();
         Movement();
     }

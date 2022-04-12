@@ -87,10 +87,17 @@ public class PlayerController : MonoBehaviour
         gameObject.transform.position = gameObject.transform.parent.position + creature.offset;
     }
 
-    private void Awake()
+    private void OnEnable()
     {
-        spiritControls.creatureContact += (other) => physicalForm = other; 
+        spiritControls.creatureContact += MoveIn;
     }
+    
+    private void OnDisable()
+    {
+        spiritControls.creatureContact -= MoveIn;
+    }
+    
+    private void MoveIn(GameObject other) => physicalForm = other;
 
     private void Start()
     {
