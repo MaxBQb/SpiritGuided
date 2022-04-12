@@ -1,4 +1,3 @@
-using System;
 using DefaultNamespace;
 using JetBrains.Annotations;
 using UnityEngine;
@@ -15,6 +14,8 @@ public class PlayerController : MonoBehaviour
     [SerializeReference] private new Transform camera;
     [CanBeNull] private GameObject body;
     [SerializeReference] private GameObject spirit;
+    [SerializeReference] private AudioSource spiritMoveInSound;
+    [SerializeReference] private ParticleSystem spiritMoveInEffect;
 
     // Properties
     private bool isSpirit => body == null;
@@ -74,6 +75,8 @@ public class PlayerController : MonoBehaviour
         body = newBody;
         creature.spirit = gameObject;
         UpdateParent();
+        spiritMoveInSound.Play();
+        spiritMoveInEffect.Play();
     }
 
     private void MoveOut()
