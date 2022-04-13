@@ -1,5 +1,6 @@
 using DefaultNamespace;
 using JetBrains.Annotations;
+using Photon.Pun;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -16,7 +17,8 @@ public class PlayerController : MonoBehaviour
     [SerializeReference] private GameObject spirit;
     [SerializeReference] private AudioSource spiritMoveInSound;
     [SerializeReference] private ParticleSystem spiritMoveInEffect;
-
+    private PhotonView view;
+    
     // Properties
     private bool isSpirit => body == null;
 
@@ -37,16 +39,21 @@ public class PlayerController : MonoBehaviour
     
     // Catch user input
     public void OnMove(InputAction.CallbackContext context)
-        => creature.Move(context.ReadValue<Vector2>());
+    {
+        if (!view.IsMine) return;
+        creature.Move(context.ReadValue<Vector2>());
+    }
 
     public void OnJump(InputAction.CallbackContext context)
     {
+        if (!view.IsMine) return;
         isUp = context.ReadValueAsButton();
         UpdateVerticalMovement();
     }
     
     public void OnCrouch(InputAction.CallbackContext context)
     {
+        if (!view.IsMine) return;
         isDown = context.ReadValueAsButton();
         if (isDown && !isSpirit)
             physicalForm = null;
@@ -55,12 +62,16 @@ public class PlayerController : MonoBehaviour
 
     private void UpdateVerticalMovement() 
         => creature.MoveVertically(isUp == isDown ? 0f : (isUp ? 1f : -1f));
-    
-    public void OnLook(InputAction.CallbackContext context) 
-        => creature.Look(camera.rotation);
+
+    public void OnLook(InputAction.CallbackContext context)
+    {
+        if (!view.IsMine) return;
+        creature.Look(camera.rotation);
+    }
 
     public void OnAttack(InputAction.CallbackContext context)
     {
+        if (!view.IsMine) return;
         if (context.ReadValueAsButton())
             creature.Attack();
     }
@@ -110,15 +121,6 @@ public class PlayerController : MonoBehaviour
     private void Start()
     {
         UpdateParent();
-    }
-
-    private void Update()
-    {
-        
-    }
-
-    private void LateUpdate()
-    {
-        
+        view = GetComponent<PhotonView>();
     }
 }

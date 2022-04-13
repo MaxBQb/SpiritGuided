@@ -1,6 +1,7 @@
 using System;
 using DefaultNamespace;
 using JetBrains.Annotations;
+using Photon.Pun;
 using UnityEngine;
 
 public class SpiritControls : MonoBehaviour, Creature
@@ -66,9 +67,6 @@ public class SpiritControls : MonoBehaviour, Creature
     private void Movement()
     {
         controller.Move(finalDirection * speed * Time.deltaTime);
-        // if (isGrounded)
-        // else if (isJumping || inAir)
-        //     transform.Translate((jumpDirection * speed * airControl) * Time.deltaTime);
     }
 
     public GameObject spirit
@@ -125,9 +123,5 @@ public class SpiritControls : MonoBehaviour, Creature
     {
         if (hit.gameObject.IsAvailable())
             creatureContact?.Invoke(hit.gameObject);
-    }
-
-    void OnCollisionExit(Collision collisionInfo)
-    {
     }
 }
