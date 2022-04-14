@@ -1,20 +1,30 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Photon.Pun;
 using UnityEngine;
+using Random = UnityEngine.Random;
+
 
 public class Spawner : MonoBehaviour
 {
     // Variables
-    [SerializeField] private float radius = 6.0f;
-    [SerializeField] private float heightSpread = 5f;
-    [SerializeReference] private GameObject instance;
+    [SerializeField] private float spreadRadius = 6.0f;
+    [SerializeField] private float spreadHeight = 5f;
+    [SerializeField] private List<Rule> rules;
+    
+    [Serializable]
+    public struct Rule
+    {
+        [SerializeField] public GameObject instance;
+        [SerializeField] public int amount;
+    }
     
     // Properties
     public Vector3 randomPosition => new Vector3(
-        Random.Range(transform.position.x - radius, transform.position.x + radius),
-        Random.Range(transform.position.y - heightSpread/2f, transform.position.y + heightSpread/2f),
-        Random.Range(transform.position.z - radius, transform.position.z + radius)
+        Random.Range(transform.position.x - spreadRadius, transform.position.x + spreadRadius),
+        Random.Range(transform.position.y - spreadHeight/2f, transform.position.y + spreadHeight/2f),
+        Random.Range(transform.position.z - spreadRadius, transform.position.z + spreadRadius)
     );
     
     // Start is called before the first frame update
@@ -32,11 +42,13 @@ public class Spawner : MonoBehaviour
     void OnDrawGizmosSelected()
     {   
         Gizmos.color = Color.magenta;
-        Gizmos.DrawWireCube(transform.position, new Vector3(radius*2f, heightSpread, radius*2));
+        Gizmos.DrawWireCube(transform.position, new Vector3(spreadRadius*2f, spreadHeight, spreadRadius*2));
     }
 
-    void Spawn()
+    private void Spawn()
     {
-        PhotonNetwork.Instantiate(instance.name, randomPosition, Quaternion.identity);
+        foreach (var rule in rules)
+            for (var i = 0; i < rule.amount; i++)
+                PhotonNetwork.Instantiate(rule.instance.name, randomPosition, Quaternion.identity);
     }
 }

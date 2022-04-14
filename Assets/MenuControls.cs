@@ -39,7 +39,7 @@ public class MenuControls : MonoBehaviourPunCallbacks
 
     public override void OnJoinedRoom()
     {
-        SceneManager.LoadScene("Game");
+        PhotonNetwork.LoadLevel("Game");
         error.text = "";
     }
 
