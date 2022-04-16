@@ -1,10 +1,12 @@
 using System;
 using DefaultNamespace;
+using ExitGames.Client.Photon;
 using JetBrains.Annotations;
 using Photon.Pun;
+using Photon.Realtime;
 using UnityEngine;
 
-public class SpiritControls : MonoBehaviour, Creature
+public class SpiritControls : MonoBehaviour, Creature, IOnEventCallback
 {
     // Variables
     [SerializeField] private float speed = 6.0f;
@@ -13,10 +15,12 @@ public class SpiritControls : MonoBehaviour, Creature
     private Vector3 moveDirection = Vector3.zero;
     private Quaternion lookAngle = Quaternion.identity;
     private Vector3 finalDirection = Vector3.zero;
+    private bool newEnabled = true;
     
     // References
     private CharacterController controller;
     [CanBeNull] private GameObject _spirit;
+    private PhotonView view;
 
     // Properties
     public Rigidbody _rigidbody;
@@ -25,6 +29,7 @@ public class SpiritControls : MonoBehaviour, Creature
     
     // Events
     public event Action<GameObject> creatureContact;
+    private const int ON_MOVE_IN = 42;
     
     public void Move(Vector2 direction)
     {
@@ -75,24 +80,40 @@ public class SpiritControls : MonoBehaviour, Creature
         set
         {
             _spirit = value;
-            bool enabled = value != null;
-            gameObject.SetActive(enabled);
-            gameObject.GetComponent<Collider>().enabled = enabled;
-            if (!enabled)
+            newEnabled = value != null;
+            if (view.IsMine && !newEnabled)
+                PhotonNetwork.RaiseEvent(ON_MOVE_IN, transform.position, new RaiseEventOptions()
+                {
+                    Receivers = ReceiverGroup.Others
+                }, SendOptions.SendReliable);
+            gameObject.SetActive(newEnabled);
+            gameObject.GetComponent<Collider>().enabled = newEnabled;
+            if (!newEnabled)
                 lastOccupied = DateTime.Now;
             moveDirection = Vector3.zero;
             finalDirection = Vector3.zero;
         }
     }
 
+    private void OnEnable()
+    {
+        PhotonNetwork.AddCallbackTarget(this);
+    }
+    
+    private void OnDisable()
+    {
+        PhotonNetwork.RemoveCallbackTarget(this);
+    }
+    
     void Start()
     {
         controller = GetComponent<CharacterController>();
+        view = GetComponent<PhotonView>();
     }
 
     private void FixedUpdate()
     {
-        if (!enabled)
+        if (!enabled && !view.IsMine)
             return;
         LifeAttractionApply();
         Movement();
@@ -124,4 +145,17 @@ public class SpiritControls : MonoBehaviour, Creature
         if (hit.gameObject.IsAvailable())
             creatureContact?.Invoke(hit.gameObject);
     }
+
+    public void OnEvent(EventData photonEvent)
+    {
+        switch (photonEvent.Code)
+        {
+            case ON_MOVE_IN:
+                OnMoveIn((Vector3) photonEvent.CustomData);
+                break;
+        }
+    }
+
+    private void OnMoveIn(Vector3 pos) => transform.position = pos;
+    
 }
